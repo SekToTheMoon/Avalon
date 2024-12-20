@@ -1,24 +1,43 @@
+"use client";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/app/utils/supabase";
+import { fetchRooms } from "@/app/action/action";
 
-type roomProps = {
-  id: string;
-  total_player: number;
-  amount_player: number;
-  status: string;
-  profileRoom: {
-    name: string;
-    profileImage: string;
+const LobbyList = () => {
+  const [rooms, setRooms] = useState<any[]>([]);
+  const fetchRoom = async () => {
+    const roomList = await fetchRooms();
+    setRooms(roomList);
   };
-};
+  const room = supabase
+    .channel("rooms")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "Room" },
+      async () => {
+        const updatedRooms = await fetchRooms(); // Fetch rooms again after change
+        setRooms(updatedRooms);
+      }
+    )
+    .subscribe();
 
-const LobbyList = ({ rooms }: { rooms: roomProps[] }) => {
+  useEffect(() => {
+    fetchRoom();
+    return () => {
+      supabase.removeChannel(room);
+    };
+  }, []);
+
+  // Subscribe to the Channel
+
   return (
     <>
       {rooms.map((room) => (
-        <TableRow>
+        <TableRow key={room.id}>
           <TableCell className="font-medium">
             {room.id.substring(0, 8)}
           </TableCell>

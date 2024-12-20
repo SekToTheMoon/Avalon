@@ -1,5 +1,5 @@
 "use server";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import db from "../utils/db";
 import { profileSchema, validateWithZod } from "../utils/zodScheme";

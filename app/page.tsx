@@ -3,13 +3,13 @@ import LobbyContainer from "@/components/lobby/LobbyContainer";
 import LobbyList from "@/components/lobby/LobbyList";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { fetchRooms } from "./action/action";
+import { Suspense } from "react";
+import { TableRow } from "@/components/ui/table";
 
 export default async function Home() {
   const user = await currentUser();
   if (!user?.privateMetadata.hasProfile) redirect("/profile");
 
-  const roomData = await fetchRooms();
   return (
     <>
       <div className="flex">
@@ -18,7 +18,7 @@ export default async function Home() {
       </div>
       <main className="mt-4 rounded-lg bg-secondary px-8 py-5 ">
         <LobbyContainer>
-          <LobbyList rooms={roomData} />
+          <LobbyList />
         </LobbyContainer>
       </main>
     </>
